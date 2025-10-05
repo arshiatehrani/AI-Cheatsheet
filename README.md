@@ -1,8 +1,8 @@
-The difference between **dimension** and **feature** is mainly one of context and level of abstraction, but in the context of a dataset, they are often used to refer to the same thing.
+# Dimension vs. Feature: The Distinction
 
 ***
 
-# Dimension vs. Feature: The Distinction
+The difference between **dimension** and **feature** is mainly one of context and level of abstraction, but in the context of a dataset, they are often used to refer to the same thing.
 
 | Concept | Definition | Context |
 | :--- | :--- | :--- |
