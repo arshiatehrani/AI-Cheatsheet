@@ -375,3 +375,67 @@ Generative models are used for **data generation**, **density estimation**, and 
 | **Main Task** | To **discriminate** between classes. | To **generate** new data samples. |
 | **Complexity** | Generally simpler to train and computationally lighter. | Often more complex, data-intensive, and harder to train (e.g., GANs). |
 | **Core Question**| "What is the most likely label for this input?" | "How did this data come to be, and what is the data's underlying structure?" |
+
+***
+
+# F1 Score (Standard - Macro - Micro)
+You're asking about the difference between the standard **F1-Score** (which you've been working with) and its two variations for multi-class problems: **Micro F1** and **Macro F1**. This distinction is critical when evaluating models on datasets with **imbalanced classes**.
+
+## 1. F1-Score (The Standard)
+
+The standard F1-Score, or often just "F1," is calculated for a **single, specific target class** (the positive class), as you saw with the "Cat" example.
+
+$$F1 = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}} = \frac{2 \times \text{TP}}{2\text{TP} + \text{FP} + \text{FN}}$$
+
+* **Purpose:** It gives a balanced measure of a model's performance on that single class. It's often used when that class is the minority class or the class of interest (e.g., Cat, Fraud, Disease).
+* **Limitation:** It only tells you how well the model did for *that one class*. If you have 10 classes, you'd get 10 different F1-Scores. You need a way to summarize this performance across *all* classes. That's where Micro and Macro F1 come in.
+
+***
+
+## 2. Macro F1-Score (Averaging Metrics)
+
+The **Macro F1** is calculated by treating all classes **equally**, regardless of how many instances belong to each class.
+
+### Calculation Steps:
+
+1.  **Calculate F1-Score for *Each* Class:** You compute the standard F1-Score individually for every single class (e.g., F1-Cat, F1-Apple, F1-Banana, etc.).
+2.  **Average the F1-Scores:** You take the unweighted average of all those individual F1-Scores.
+
+$$\text{Macro F1} = \frac{1}{\text{N}_{\text{classes}}} \sum_{i=1}^{\text{N}_{\text{classes}}} \text{F1}_{\text{i}}$$
+
+### Key Characteristics:
+
+* **Sensitivity to Imbalance:** It is **highly sensitive to performance on minority classes**. If a model performs poorly on a small class (e.g., Cat), the Macro F1 score will drop significantly, even if the model performs perfectly on the large classes (e.g., Apples).
+* **When to Use:** Use Macro F1 when you care equally about the accurate classification of every class, especially when you have an imbalanced dataset and want to ensure the model isn't ignoring the small classes.
+
+***
+
+## 3. Micro F1-Score (Averaging Instances)
+
+The **Micro F1** is calculated by aggregating the True Positives, False Positives, and False Negatives across **all** classes first, and then applying the F1 formula.
+
+### Calculation Steps:
+
+1.  **Sum TP, FP, FN Across *All* Classes:** Sum up all the individual $\text{TP}_i$, $\text{FP}_i$, and $\text{FN}_i$ counts from every class to get $\sum \text{TP}$, $\sum \text{FP}$, and $\sum \text{FN}$.
+2.  **Calculate F1 from the Total Counts:** Apply the standard F1 formula using these grand totals.
+
+$$\text{Micro F1} = \frac{2 \times (\sum \text{TP})}{2(\sum \text{TP}) + (\sum \text{FP}) + (\sum \text{FN})}$$
+
+### Key Characteristics:
+
+* **Insensitivity to Imbalance:** It is **dominated by the large classes**. It essentially weights each class by its size. In a severe imbalance, Micro F1 will be very close to the overall **Accuracy**.
+* **When to Use:** Use Micro F1 when you care about the classification of all individual instances equally. This metric is a good measure of overall model correctness, similar to accuracy, but is more appropriate than accuracy when comparing models because it is less prone to the "accuracy paradox."
+
+***
+
+## Choosing the Best Metric
+
+The correct choice depends entirely on the problem:
+
+| Goal | Metric | Reason |
+| :--- | :--- | :--- |
+| **Overall Performance** | **Micro F1** | Treats every single instance prediction equally; dominated by the largest class sizes. |
+| **Fairness/Minority Class** | **Macro F1** | Treats every class equally, regardless of size; a poor score indicates major issues with small classes. |
+| **Specific Focus** | **Standard F1** | Focuses only on the performance of a single, highly critical class (e.g., the "Cat" class). |
+
+For most projects involving imbalanced classification, many practitioners recommend reporting **both** Micro F1 and Macro F1, as well as the standard F1 for the minority class, to provide a complete picture of the model's performance.
